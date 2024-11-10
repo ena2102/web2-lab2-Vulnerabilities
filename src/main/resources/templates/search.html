@@ -1,17 +1,22 @@
 <!DOCTYPE html>
-<html lang="hr">
+<html lang="hr" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width">
     <title>Rezultat pretrage</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
 </head>
 <body>
-<h1>Reflektirani XSS Napad</h1>
-
-<h1>Rezultat pretrage:</h1>
-<div th:text="${searchResult}" th:utext="${searchResult}"></div>
-<a href="/">
-    <button>Vrati se na početnu stranicu</button>
-</a>
+<div class="container">
+        <h2>Reflektirani XSS Napad</h2>
+    <div class="text">
+        <p>Ako je XSS ranjivost omogućena, uneseni tekst se prikazuje bez sanitacije, što znači da će se XSS napad uspješno izvršiti. Ako je XSS ranjivost isključena, unos će biti sanitiziran kako bi se spriječila mogućnost napada.</p>
+        </div>
+    <h2>Rezultat pretrage:</h2>
+    <div th:text="${searchResult}" th:utext="${searchResult}"></div>
+        <a href="/">
+            <button class="bac_buttons">Vrati se na početnu stranicu</button>
+        </a>
+</div>
 </body>
 </html>

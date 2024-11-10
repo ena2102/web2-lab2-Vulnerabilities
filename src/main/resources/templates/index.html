@@ -3,45 +3,86 @@
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <title>Demo</title>
-    <meta name="description" content=""/>
+    <title>Testiranje Ranjivosti</title>
+    <meta name="description" content="Testirajte različitih ranjivosti."/>
     <meta name="viewport" content="width=device-width"/>
-    <base href="/"/>
-    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
-    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
 </head>
 <body>
-<h1>Dobrodošli </span>
-</h1>
-<hr>
-<h1>Reflektirani XSS Napad</h1>
-<form action="/xss-vulnerability" method="get">
-    <input type="text" name="search"/>
-    <button type="submit">Pretraži</button>
-</form>
-<p>Status XSS Ranjivosti:
-    <strong th:text="${xssVulnerabilityEnabled ? 'Omogućeno' : 'Onemogućeno'}"></strong>
-</p>
-<a href="/toggle-xss">
-    <button>Uključi/Isključi XSS Ranjivost</button>
-</a>
-<hr>
-<hr>
+<div class="container">
+    <div class="tabs">
+        <button class="tab-button active" onclick="showTab('xss')">XSS</button>
+        <button class="tab-button" onclick="showTab('bac')">Loša kontrola pristupa</button>
+    </div>
 
-<h2>Broken Access Control (BAC)</h2>
-<p>Status BAC Ranjivosti:
-    <strong th:text="${bacVulnerabilityEnabled ? 'Omogućeno' : 'Onemogućeno'}"></strong>
-</p>
-<a href="/toggle-bac">
-    <button>Uključi/Isključi BAC Ranjivost</button>
-</a>
+    <div id="xss" class="tab-content active">
+        <h2>Reflektirani XSS Napad</h2>
+        <div class="text">
+        <p>Reflektirani XSS napad omogućuje napadačima da umetnu zlonamjerni JavaScript kod u unos na stranici, koji se zatim izvršava u pregledniku korisnika.</p>
+        <p><strong>Upute za testiranje:</strong></p>
+        <ul>
+            <li>U polje za pretragu unesite neki pojam, npr.  "&lt;script&gt;alert('XSS')&lt;/script&gt;".</li>
+            <li>Ako je ranjivost omogućena, napad će biti izvršen kada kliknete na "Pretraži".</li>
+            <li>Ranjivost možete uključiti ili isključiti klikom na gumb ispod.</li>
+        </ul>
+        </div>
+        <form action="/xss-vulnerability" method="get">
+            <input type="text" name="search" placeholder="Unesite pojam za pretragu"/>
+            <button type="submit">Pretraži</button>
+        </form>
+        <p>Status ranjivosti (XSS):
+            <strong th:text="${xssVulnerabilityEnabled ? 'Uključena' : 'Isključena'}"></strong>
+        </p>
+        <a href="/toggle-xss">
+            <button>Uključi/Isključi XSS ranjivost</button>
+        </a>
+    </div>
 
-<hr>
+    <div id="bac" class="tab-content">
+        <h2>Loša kontrola pristupa</h2>
+        <div class="text">
+        <p>Loša kontrola pristupa omogućuje neautoriziranim korisnicima da pristupe podacima koji bi trebali biti zaštićeni.</p>
+        <p><strong>Upute za testiranje:</strong></p>
+        <ul>
+            <li>Kliknite na "Pogledaj podatke" kako biste vidjeli podatke koji bi trebali biti dostupni samo prijavljenim korisnicima.</li>
+            <li>Ako je ranjivost omogućena, možete pristupiti podacima bez prijave.</li>
+            <li>Inače, morate biti prijavljeni kako biste mogli pristupiti tim podacima.</li>
+        </ul>
+        </div>
+        <p>Status ranjivosti (Loša kontrola pristupa):
+            <strong th:text="${bacVulnerabilityEnabled ? 'Uključena' : 'Isključena'}"></strong>
+        </p>
+        <a href="/toggle-bac">
+            <button class="bac_buttons">Uključi/Isključi ranjivost loše kontrole pristupa</button>
+        </a>
+        <a th:href="${bacVulnerabilityEnabled ? '/userDataBacEnabled' : '/userData'}">
+            <button class="bac_buttons">Pogledaj podatke</button>
+        </a>
+    </div>
+</div>
 
-<a th:href="${bacVulnerabilityEnabled ? '/userDataBacEnabled' : '/userData'}">
-    <button>Pogledaj korisnikove podatke</button>
-</a>
+<script>
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
+        document.getElementById(tabId).classList.add('active');
+        document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+    }
+
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab) {
+            showTab(tab);
+        } else {
+            showTab('xss');
+        }
+    };
+</script>
 
 </body>
 </html>
